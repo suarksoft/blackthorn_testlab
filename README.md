@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DeltaG TestLab (Next.js)
 
-## Getting Started
+Bu klasor, mevcut `deltag-testlab` Vite projesinin Next.js (App Router) tabanli surumudur.
 
-First, run the development server:
+## Calistirma
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Varsayilan uygulama adresi:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `http://127.0.0.1:3200`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## API Proxy
 
-## Learn More
+Istemci istekleri `/api/*` altindan backend'e yonlendirilir.
 
-To learn more about Next.js, take a look at the following resources:
+- Varsayilan hedef: `http://127.0.0.1:8080`
+- Ortam degiskeni ile degistir: `API_TARGET`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Ornek:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+API_TARGET=http://127.0.0.1:9000 npm run dev
+```
 
-## Deploy on Vercel
+## Durum
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Next.js projesi olusturuldu
+- Solana ve wallet bagimliliklari eklendi
+- `/api/[...path]` route handler ile backend proxy hazirlandi
+- `deltag-testlab/src/App.tsx` ekrani `src/components/TestLabApp.tsx` olarak tasindi
+- Eski stil yapisi `src/app/globals.css` icine tasindi
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# blackthorn_testlab
