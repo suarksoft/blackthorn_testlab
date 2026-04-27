@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable react/no-unescaped-entities */
 
 import { useEffect, useMemo, useState } from "react";
 import { getWallets } from "@wallet-standard/app";
@@ -339,6 +338,184 @@ async function createRealDevnetTransferScenario(): Promise<{
     payer: payer.publicKey.toBase58(),
     recipient: recipient.publicKey.toBase58(),
   };
+}
+
+// UI Components
+function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`bg-[#12121A] border border-[#1E1E2E] rounded-xl p-5 ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+function Button({
+  children,
+  onClick,
+  disabled,
+  variant = "primary",
+  className = "",
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  variant?: "primary" | "secondary";
+  className?: string;
+}) {
+  const base = "px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed";
+  const variants = {
+    primary: "bg-[#8B5CF6] hover:bg-[#7C3AED] text-white",
+    secondary: "bg-transparent border border-[#1E1E2E] text-[#E8E8ED] hover:bg-[#1A1A28]",
+  };
+  return (
+    <button onClick={onClick} disabled={disabled} className={`${base} ${variants[variant]} ${className}`}>
+      {children}
+    </button>
+  );
+}
+
+function Input({
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+  className = "",
+}: {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+  type?: string;
+  className?: string;
+}) {
+  return (
+    <input
+      type={type}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      className={`w-full bg-[#0A0A0F] border border-[#1E1E2E] rounded-lg px-4 py-2.5 text-sm text-[#E8E8ED] placeholder-[#6B6B80] focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] outline-none transition-all duration-150 ${className}`}
+    />
+  );
+}
+
+function Select({
+  value,
+  onChange,
+  children,
+  className = "",
+}: {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <select
+      value={value}
+      onChange={onChange}
+      className={`w-full bg-[#0A0A0F] border border-[#1E1E2E] rounded-lg px-4 py-2.5 text-sm text-[#E8E8ED] focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] outline-none transition-all duration-150 ${className}`}
+    >
+      {children}
+    </select>
+  );
+}
+
+function Textarea({
+  value,
+  onChange,
+  placeholder,
+  rows = 5,
+  readOnly = false,
+  className = "",
+}: {
+  value: string;
+  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  placeholder?: string;
+  rows?: number;
+  readOnly?: boolean;
+  className?: string;
+}) {
+  return (
+    <textarea
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      rows={rows}
+      readOnly={readOnly}
+      className={`w-full bg-[#0A0A0F] border border-[#1E1E2E] rounded-lg px-4 py-2.5 text-sm text-[#E8E8ED] placeholder-[#6B6B80] focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6] outline-none transition-all duration-150 resize-y font-mono ${className}`}
+    />
+  );
+}
+
+function Label({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <label className={`block text-xs font-medium text-[#6B6B80] uppercase tracking-wider mb-2 ${className}`}>
+      {children}
+    </label>
+  );
+}
+
+function InfoCallout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="bg-[#8B5CF6]/8 border border-[#8B5CF6]/20 rounded-lg p-4 text-sm text-[#E8E8ED]">
+      {children}
+    </div>
+  );
+}
+
+function WarningCallout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="bg-[#F59E0B]/8 border border-[#F59E0B]/20 rounded-lg p-4 text-sm text-[#E8E8ED]">
+      {children}
+    </div>
+  );
+}
+
+function JsonOutput({ children, className = "" }: { children: string; className?: string }) {
+  return (
+    <pre className={`bg-[#0A0A0F] border border-[#1E1E2E] rounded-lg p-4 font-mono text-xs text-[#A78BFA] overflow-auto max-h-[400px] whitespace-pre-wrap break-words ${className}`}>
+      {children}
+    </pre>
+  );
+}
+
+function StatusBadge({ done }: { done: boolean }) {
+  if (done) {
+    return (
+      <span className="flex items-center gap-1.5 text-xs">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E]" />
+        <span className="text-[#22C55E]">Tamam</span>
+      </span>
+    );
+  }
+  return (
+    <span className="flex items-center gap-1.5 text-xs">
+      <span className="w-1.5 h-1.5 rounded-full bg-[#6B6B80]" />
+      <span className="text-[#6B6B80]">Bekliyor</span>
+    </span>
+  );
+}
+
+function ApiBox({ title, response }: { title: string; response: ApiResponse | null }) {
+  return (
+    <Card>
+      <h3 className="text-sm font-semibold text-[#E8E8ED] mb-3">{title}</h3>
+      {response ? (
+        <>
+          <p className={`text-xs font-semibold mb-2 ${response.ok ? "text-[#22C55E]" : "text-[#EF4444]"}`}>
+            HTTP {response.status} {response.ok ? "OK" : "HATA"}
+          </p>
+          <JsonOutput>{JSON.stringify(response.data, null, 2)}</JsonOutput>
+          <details className="mt-3">
+            <summary className="text-xs text-[#6B6B80] cursor-pointer hover:text-[#E8E8ED]">Header detaylari</summary>
+            <JsonOutput className="mt-2">{pretty(response.headers)}</JsonOutput>
+          </details>
+        </>
+      ) : (
+        <p className="text-sm text-[#6B6B80]">Henuz istek gonderilmedi.</p>
+      )}
+    </Card>
+  );
 }
 
 export default function TestLabApp() {
@@ -888,13 +1065,13 @@ export default function TestLabApp() {
     { id: "welcome", title: "0. Baslangic", hint: "Neyi test ediyoruz?", done: true },
     {
       id: "setup",
-      title: "1. Ortam kontrol",
+      title: "1. Ortam Kontrol",
       hint: "API ve saglik",
       done: !!healthRes && !!readyRes,
     },
     {
       id: "scenario",
-      title: "2. Senaryo uret",
+      title: "2. Senaryo Uret",
       hint: "Gercek tx / wallet tx",
       done: !!txBase64,
     },
@@ -945,111 +1122,118 @@ export default function TestLabApp() {
   function renderPage() {
     if (activePage === "welcome") {
       return (
-        <section className="page-card">
-          <h1>DeltaG Test Akademi</h1>
-          <p>
-            Bu ekran bir test panelinden cok, adim adim egitimli bir laboratuvar. Yazilim bilmeyen
-            biri bile soldaki adimlari sirayla ilerleyerek "normalde ne olur, DeltaG nasil fark
-            yaratir" sorusunu gorebilir.
-          </p>
-          <div className="compare-grid">
-            <article>
-              <h3>Normalde</h3>
-              <p>
-                Kullanici genelde "Approve" tusuna basar. Arka planda ne risk oldugu net
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-semibold text-[#E8E8ED]">Blackthorn Test Akademi</h1>
+            <p className="text-sm text-[#6B6B80] mt-2">
+              Bu ekran bir test panelinden cok, adim adim egitimli bir laboratuvar. Yazilim bilmeyen
+              biri bile soldaki adimlari sirayla ilerleyerek &quot;normalde ne olur, Blackthorn nasil fark
+              yaratir&quot; sorusunu gorebilir.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Card>
+              <h3 className="text-sm font-semibold text-[#E8E8ED] mb-2">Normalde</h3>
+              <p className="text-sm text-[#6B6B80]">
+                Kullanici genelde &quot;Approve&quot; tusuna basar. Arka planda ne risk oldugu net
                 gosterilmez. Programlar, CPI zinciri, policy etkisi anlasilmaz.
               </p>
-            </article>
-            <article>
-              <h3>DeltaG ile</h3>
-              <p>
+            </Card>
+            <Card>
+              <h3 className="text-sm font-semibold text-[#E8E8ED] mb-2">Blackthorn ile</h3>
+              <p className="text-sm text-[#6B6B80]">
                 Transaction imzalanmadan once simule edilir. Risk bulgulari, bakiye degisimleri,
                 policy kurallari ve karar nedeni acik sekilde raporlanir.
               </p>
-            </article>
+            </Card>
           </div>
-          <div className="tips">
-            <h3>Baslamadan once</h3>
-            <ol>
-              <li>Soldan "1. Ortam kontrol" adimina git.</li>
-              <li>Sonra "2. Senaryo uret" sayfasinda tx verisini hazirla.</li>
-              <li>Kalan tum testleri sirayla calistir.</li>
-            </ol>
-          </div>
-        </section>
+
+          <InfoCallout>
+            <strong>Baslamadan once:</strong> Soldan &quot;1. Ortam Kontrol&quot; adimina git. Sonra &quot;2. Senaryo Uret&quot; sayfasinda tx verisini hazirla. Kalan tum testleri sirayla calistir.
+          </InfoCallout>
+        </div>
       );
     }
 
     if (activePage === "setup") {
       return (
-        <section className="page-card">
-          <h1>1) Ortam Kontrol Sayfasi</h1>
-          <p>
-            Burada sistem ayakta mi diye bakiyoruz. Bu adim fail olursa diger testlerin sonucu
-            guvenilir olmaz.
-          </p>
-          <div className="info-banner">
-            <strong>Kullanicidan beklenen:</strong> Sadece cluster secimi ve (varsa) API key.
-            Yazilim bilgisi gerekmez.
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-semibold text-[#E8E8ED]">Ortam Kontrol</h1>
+            <p className="text-sm text-[#6B6B80] mt-2">
+              Burada sistem ayakta mi diye bakiyoruz. Bu adim fail olursa diger testlerin sonucu
+              guvenilir olmaz.
+            </p>
           </div>
-          <div className="form-grid two">
-            <label>
-              Cluster
-              <select value={cluster} onChange={(e) => setCluster(e.target.value as Cluster)}>
+
+          <WarningCallout>
+            <strong>Kullanicidan beklenen:</strong> Sadece cluster secimi ve (varsa) API key. Yazilim bilgisi gerekmez.
+          </WarningCallout>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Cluster</Label>
+              <Select value={cluster} onChange={(e) => setCluster(e.target.value as Cluster)}>
                 {CLUSTERS.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
+                  <option key={c} value={c}>{c}</option>
                 ))}
-              </select>
-            </label>
-            <label>
-              API Key (opsiyonel)
-              <input
+              </Select>
+            </div>
+            <div>
+              <Label>API Key (opsiyonel)</Label>
+              <Input
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 placeholder="Yoksa bos birakabilirsin"
               />
-            </label>
+            </div>
           </div>
-          <div className="actions">
-            <button onClick={onHealthChecks} disabled={!!isBusy}>
-              Health + Ready Testini Calistir
-            </button>
+
+          <div>
+            <Button onClick={onHealthChecks} disabled={!!isBusy}>
+              {isBusy === "health" ? "Calisiyor..." : "Health + Ready Testini Calistir"}
+            </Button>
           </div>
-          <div className="form-grid two">
+
+          <div className="grid grid-cols-2 gap-4">
             <ApiBox title="/health sonucu" response={healthRes} />
             <ApiBox title="/health/ready sonucu" response={readyRes} />
           </div>
-        </section>
+        </div>
       );
     }
 
     if (activePage === "scenario") {
       return (
-        <section className="page-card">
-          <h1>2) Gercek Hayat Senaryosu Olusturma</h1>
-          <p>
-            Bu sayfa artik sadece rastgele tx uretmiyor; istersen bagli wallet ile gercek test
-            transferi hazirlayip analyze'a da sokabiliyorsun.
-          </p>
-          <div className="wallet-panel">
-            <div className="wallet-panel-header">
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-semibold text-[#E8E8ED]">Senaryo Olusturma</h1>
+            <p className="text-sm text-[#6B6B80] mt-2">
+              Bu sayfa sadece rastgele tx uretmiyor; istersen bagli wallet ile gercek test transferi hazirlayip analyze&apos;a da sokabiliyorsun.
+            </p>
+          </div>
+
+          {/* Wallet Connection Section */}
+          <Card>
+            <div className="flex items-start justify-between gap-4 mb-4">
               <div>
-                <h3>Swig / Solana Wallet Baglantisi</h3>
-                <p>
-                  Wallet Standard destekleyen cuzdanlari otomatik bulur. Swig algilanirsa once onu
-                  onerir.
-                </p>
+                <h3 className="text-sm font-semibold text-[#E8E8ED] mb-1">Wallet Baglantisi</h3>
+                <p className="text-xs text-[#6B6B80]">Wallet Standard destekleyen cuzdanlari otomatik bulur.</p>
               </div>
-              <span className={`pill ${connectedWallet ? "connected" : "idle"}`}>
-                {connectedWallet ? "Wallet bagli" : "Wallet bagli degil"}
+              <span className={`px-3 py-1.5 rounded-full text-xs font-medium ${
+                connectedWallet 
+                  ? "bg-[#22C55E]/10 border border-[#22C55E]/30 text-[#22C55E]" 
+                  : "bg-[#6B6B80]/10 border border-[#6B6B80]/30 text-[#6B6B80]"
+              }`}>
+                {connectedWallet ? `Bagli: ${connectedWallet.walletName.slice(0, 4)}...` : "Wallet bagli degil"}
               </span>
             </div>
-            <div className="form-grid two">
-              <label>
-                Bulunan wallet
-                <select
+
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <Label>Bulunan wallet</Label>
+                <Select
                   value={effectiveSelectedWalletId}
                   onChange={(e) => setSelectedWalletId(e.target.value)}
                 >
@@ -1057,382 +1241,439 @@ export default function TestLabApp() {
                     <option value="">Wallet bulunamadi</option>
                   ) : (
                     walletOptions.map((wallet) => (
-                      <option key={wallet.id} value={wallet.id}>
-                        {wallet.name}
-                      </option>
+                      <option key={wallet.id} value={wallet.id}>{wallet.name}</option>
                     ))
                   )}
-                </select>
-              </label>
-              <div className="wallet-status-card">
-                <strong>{connectedWallet?.walletName ?? "Bagli wallet yok"}</strong>
-                <span>{connectedWallet?.address ?? "Wallet secip baglanabilirsin."}</span>
-                <span>Bakiye: {formatSol(walletBalanceLamports)}</span>
+                </Select>
+              </div>
+              <div className="bg-[#0A0A0F] border border-[#1E1E2E] rounded-lg p-3">
+                <p className="text-sm font-medium text-[#E8E8ED]">{connectedWallet?.walletName ?? "Bagli wallet yok"}</p>
+                <p className="text-xs text-[#6B6B80] break-all mt-1">{connectedWallet?.address ?? "Wallet secip baglanabilirsin."}</p>
+                <p className="text-xs text-[#6B6B80] mt-1">Bakiye: {formatSol(walletBalanceLamports)}</p>
               </div>
             </div>
-            <div className="actions">
-              <button onClick={onConnectWallet} disabled={!!isBusy || walletOptions.length === 0}>
+
+            <div className="flex flex-wrap gap-2">
+              <Button variant="secondary" onClick={onConnectWallet} disabled={!!isBusy || walletOptions.length === 0}>
                 Wallet Bagla
-              </button>
-              <button onClick={onDisconnectWallet} disabled={!!isBusy || !connectedWallet}>
+              </Button>
+              <Button variant="secondary" onClick={onDisconnectWallet} disabled={!!isBusy || !connectedWallet}>
                 Wallet Baglantisini Kes
-              </button>
-              <button onClick={onRefreshWallets} disabled={!!isBusy}>
+              </Button>
+              <Button variant="secondary" onClick={onRefreshWallets} disabled={!!isBusy}>
                 Wallet Listesini Yenile
-              </button>
-              <button onClick={onRefreshWalletBalance} disabled={!!isBusy || !connectedWallet}>
+              </Button>
+              <Button variant="secondary" onClick={onRefreshWalletBalance} disabled={!!isBusy || !connectedWallet}>
                 Bakiye Yenile
-              </button>
-              <button
-                onClick={onRequestWalletAirdrop}
-                disabled={!!isBusy || !connectedWallet || cluster !== "devnet"}
-              >
+              </Button>
+              <Button variant="secondary" onClick={onRequestWalletAirdrop} disabled={!!isBusy || !connectedWallet || cluster !== "devnet"}>
                 Devnet Airdrop (1 SOL)
-              </button>
+              </Button>
             </div>
-            <div className="form-grid two">
-              <label>
-                Recipient adresi
-                <input
+          </Card>
+
+          {/* Transfer Settings */}
+          <Card>
+            <h3 className="text-sm font-semibold text-[#E8E8ED] mb-4">Transfer Ayarlari</h3>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <Label>Recipient adresi</Label>
+                <Input
                   value={walletRecipient}
                   onChange={(e) => setWalletRecipient(e.target.value)}
                   placeholder="Devnet recipient public key"
                 />
-              </label>
-              <label>
-                Transfer miktari (lamports)
-                <input
+              </div>
+              <div>
+                <Label>Transfer miktari (lamports)</Label>
+                <Input
                   value={walletLamports}
                   onChange={(e) => setWalletLamports(e.target.value)}
                   placeholder="5000"
                 />
-              </label>
+              </div>
             </div>
-            <div className="actions">
-              <button onClick={onGenerateWalletRecipient} disabled={!!isBusy}>
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={onGenerateWalletRecipient} disabled={!!isBusy}>
                 Yeni Recipient Uret
-              </button>
-              <button onClick={onPrepareWalletSignedTx} disabled={!!isBusy || !connectedWallet}>
-                Wallet ile Sign Et ve Analyze'a Yukle
-              </button>
-              <button
-                onClick={onSendWalletTestTx}
-                disabled={!!isBusy || !connectedWallet || cluster !== "devnet"}
-              >
+              </Button>
+              <Button variant="secondary" onClick={onPrepareWalletSignedTx} disabled={!!isBusy || !connectedWallet}>
+                Wallet ile Sign Et ve Analyze&apos;a Yukle
+              </Button>
+              <Button variant="secondary" onClick={onSendWalletTestTx} disabled={!!isBusy || !connectedWallet || cluster !== "devnet"}>
                 Wallet ile Sign + Send (Devnet)
-              </button>
+              </Button>
             </div>
-          </div>
-          <div className="info-banner">
-            <strong>Wallet butonlari:</strong> Ilki imzali tx'i sadece analyze icin hazirlar.
-            Ikincisi ise gercek devnet transferini yollar ve signature/base64'i otomatik doldurur.
-          </div>
-          <div className="actions">
-            <button onClick={onCreateRealScenario} disabled={!!isBusy}>
-              Gercek Devnet Transfer Senaryosu Olustur
-            </button>
-            <button onClick={onGenerateSampleTx} disabled={!!isBusy}>
-              Hizli Demo Tx Uret (Imzasiz)
-            </button>
-          </div>
-          <div className="form-grid two">
-            <label>
-              Varsa Devnet Signature
-              <input
-                value={txSignature}
-                onChange={(e) => setTxSignature(e.target.value)}
-                placeholder="Ornek: 5Q..."
-              />
-            </label>
-            <div className="actions compact">
-              <button onClick={onLoadFromSignature} disabled={!!isBusy}>
-                Signature'dan Base64 Getir
-              </button>
+          </Card>
+
+          <InfoCallout>
+            <strong>Wallet butonlari:</strong> Ilki imzali tx&apos;i sadece analyze icin hazirlar. Ikincisi ise gercek devnet transferini yollar ve signature/base64&apos;i otomatik doldurur.
+          </InfoCallout>
+
+          {/* Quick Generation */}
+          <Card>
+            <h3 className="text-sm font-semibold text-[#E8E8ED] mb-4">Hizli Uretim</h3>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="secondary" onClick={onCreateRealScenario} disabled={!!isBusy}>
+                {isBusy === "real-devnet" ? "Calisiyor..." : "Gercek Devnet Transfer Senaryosu Olustur"}
+              </Button>
+              <Button variant="secondary" onClick={onGenerateSampleTx} disabled={!!isBusy}>
+                {isBusy === "sample-tx" ? "Calisiyor..." : "Hizli Demo Tx Uret (Imzasiz)"}
+              </Button>
             </div>
-          </div>
-          <label>
-            Hazirlanan Transaction Base64
-            <textarea
+          </Card>
+
+          {/* Load from Signature */}
+          <Card>
+            <h3 className="text-sm font-semibold text-[#E8E8ED] mb-4">Signature&apos;dan Yukle</h3>
+            <div className="grid grid-cols-[1fr_auto] gap-4 items-end">
+              <div>
+                <Label>Varsa Devnet Signature</Label>
+                <Input
+                  value={txSignature}
+                  onChange={(e) => setTxSignature(e.target.value)}
+                  placeholder="Ornek: 5Q..."
+                />
+              </div>
+              <Button onClick={onLoadFromSignature} disabled={!!isBusy}>
+                Signature&apos;dan Base64 Getir
+              </Button>
+            </div>
+          </Card>
+
+          {/* Output */}
+          <div>
+            <Label>Hazirlanan Transaction Base64</Label>
+            <Textarea
               rows={8}
               value={txBase64}
               onChange={(e) => setTxBase64(e.target.value)}
               placeholder="Bu alan tum sonraki testlerde kullanilir."
             />
-          </label>
-          <div className="note">
-            <h3>Senaryo Ozeti</h3>
-            <pre>{pretty(scenarioMeta)}</pre>
           </div>
-        </section>
+
+          {scenarioMeta.type && (
+            <Card>
+              <h3 className="text-sm font-semibold text-[#E8E8ED] mb-2">Senaryo Ozeti</h3>
+              <JsonOutput>{pretty(scenarioMeta)}</JsonOutput>
+            </Card>
+          )}
+        </div>
       );
     }
 
     if (activePage === "analyze") {
       return (
-        <section className="page-card">
-          <h1>3) Analyze Sayfasi (Ana Motor)</h1>
-          <p>
-            Bu adim projenin kalbi. Bir transaction guvenli mi, degil mi? Neden? Hangi bulgularla?
-            Bu sayfada cevap gorursun.
-          </p>
-          <div className="compare-grid">
-            <article>
-              <h3>Normalde</h3>
-              <p>Bir cogu uygulama sadece "onayla" der, teknik detay aciklamaz.</p>
-            </article>
-            <article>
-              <h3>DeltaG Farki</h3>
-              <p>Risk findings, reason listesi, semantic ozet, ve policy sonucu birlikte gelir.</p>
-            </article>
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-semibold text-[#E8E8ED]">Analyze (Ana Motor)</h1>
+            <p className="text-sm text-[#6B6B80] mt-2">
+              Bu adim projenin kalbi. Bir transaction guvenli mi, degil mi? Neden? Hangi bulgularla? Bu sayfada cevap gorursun.
+            </p>
           </div>
-          {connectedWallet ? (
-            <div className="info-banner">
-              <strong>User wallet context:</strong> Analyze ve batch isteklerine otomatik olarak{" "}
-              <code>{connectedWallet.address}</code> eklenecek.
-            </div>
-          ) : null}
-          <label>
-            Policy JSON (opsiyonel)
-            <textarea rows={5} value={policyJson} onChange={(e) => setPolicyJson(e.target.value)} />
-          </label>
-          <div className="actions">
-            <button onClick={onAnalyze} disabled={!!isBusy}>
-              Analyze Testini Calistir
-            </button>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Card>
+              <h3 className="text-sm font-semibold text-[#E8E8ED] mb-2">Normalde</h3>
+              <p className="text-sm text-[#6B6B80]">
+                Bir cogu uygulama sadece &quot;onayla&quot; der, teknik detay aciklamaz.
+              </p>
+            </Card>
+            <Card>
+              <h3 className="text-sm font-semibold text-[#E8E8ED] mb-2">Blackthorn Farki</h3>
+              <p className="text-sm text-[#6B6B80]">
+                Risk findings, reason listesi, semantic ozet, ve policy sonucu birlikte gelir.
+              </p>
+            </Card>
           </div>
-          {decisionCard ? (
-            <div className={`decision ${decisionCard.safe ? "safe" : "block"}`}>
-              <strong>{decisionCard.safe ? "SAFE / ALLOW" : "RISKLI / BLOCK"}</strong>
-              <p>
+
+          {connectedWallet && (
+            <InfoCallout>
+              <strong>User wallet context:</strong> Analyze ve batch isteklerine otomatik olarak <code className="font-mono text-[#A78BFA]">{connectedWallet.address}</code> eklenecek.
+            </InfoCallout>
+          )}
+
+          <div>
+            <Label>Policy JSON (opsiyonel)</Label>
+            <Textarea rows={5} value={policyJson} onChange={(e) => setPolicyJson(e.target.value)} />
+          </div>
+
+          <div>
+            <Button onClick={onAnalyze} disabled={!!isBusy}>
+              {isBusy === "analyze" ? "Calisiyor..." : "Analyze Testini Calistir"}
+            </Button>
+          </div>
+
+          {decisionCard && (
+            <div className={`rounded-lg p-4 border ${
+              decisionCard.safe 
+                ? "bg-[#22C55E]/10 border-[#22C55E]/30" 
+                : "bg-[#EF4444]/10 border-[#EF4444]/30"
+            }`}>
+              <strong className={decisionCard.safe ? "text-[#22C55E]" : "text-[#EF4444]"}>
+                {decisionCard.safe ? "SAFE / ALLOW" : "RISKLI / BLOCK"}
+              </strong>
+              <p className="text-sm text-[#E8E8ED] mt-2">
                 {decisionCard.safe
                   ? "Bu senaryoda karar guvenli gorunuyor."
                   : "Bu senaryoda risk tespit edildi. Asagidaki nedenler aciklamadir."}
               </p>
-              <ul>
-                {(decisionCard.reasons ?? []).slice(0, 6).map((reason, idx) => (
-                  <li key={`${reason}-${idx}`}>{reason}</li>
-                ))}
-              </ul>
+              {decisionCard.reasons && decisionCard.reasons.length > 0 && (
+                <ul className="list-disc list-inside text-sm text-[#6B6B80] mt-2">
+                  {decisionCard.reasons.slice(0, 6).map((reason, idx) => (
+                    <li key={`${reason}-${idx}`}>{reason}</li>
+                  ))}
+                </ul>
+              )}
             </div>
-          ) : null}
+          )}
+
           <ApiBox title="Analyze JSON sonucu" response={analyzeRes} />
-        </section>
+        </div>
       );
     }
 
     if (activePage === "batch") {
       return (
-        <section className="page-card">
-          <h1>4) Batch Sayfasi</h1>
-          <p>
-            Ayni anda birden fazla transaction test ederek sistemin tutarliligini gorursun. Gercek
-            hayatta entegratorler bu endpointi toplu tarama icin kullanir.
-          </p>
-          <label>
-            Batch Listesi (her satir bir base64)
-            <textarea
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-semibold text-[#E8E8ED]">Batch Test</h1>
+            <p className="text-sm text-[#6B6B80] mt-2">
+              Ayni anda birden fazla transaction test ederek sistemin tutarliligini gorursun. Gercek hayatta entegratorler bu endpointi toplu tarama icin kullanir.
+            </p>
+          </div>
+
+          <div>
+            <Label>Batch Listesi (her satir bir base64)</Label>
+            <Textarea
               rows={8}
               value={batchInput}
               onChange={(e) => setBatchInput(e.target.value)}
               placeholder={"base64-1\nbase64-2"}
             />
-          </label>
-          <div className="actions">
-            <button onClick={onBatch} disabled={!!isBusy}>
-              Batch Testini Calistir
-            </button>
           </div>
+
+          <div>
+            <Button onClick={onBatch} disabled={!!isBusy}>
+              {isBusy === "batch" ? "Calisiyor..." : "Batch Testini Calistir"}
+            </Button>
+          </div>
+
           <ApiBox title="Batch JSON sonucu" response={batchRes} />
-        </section>
+        </div>
       );
     }
 
     if (activePage === "stream") {
       return (
-        <section className="page-card">
-          <h1>5) Stream (SSE) Sayfasi</h1>
-          <p>
-            Bu adimda sonuclarin "canli event" olarak akisini gorursun. Uzun batch'lerde ilerleme
-            takibi icin idealdir.
-          </p>
-          <div className="actions">
-            <button onClick={onStream} disabled={!!isBusy}>
-              Stream Testini Baslat
-            </button>
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-semibold text-[#E8E8ED]">Stream (SSE)</h1>
+            <p className="text-sm text-[#6B6B80] mt-2">
+              Bu adimda sonuclarin &quot;canli event&quot; olarak akisini gorursun. Uzun batch&apos;lerde ilerleme takibi icin idealdir.
+            </p>
           </div>
-          <div className="note">
-            <h3>Canli Event Log</h3>
-            <pre>{streamEvents.join("\n") || "Henuz event yok."}</pre>
+
+          <div>
+            <Button onClick={onStream} disabled={!!isBusy}>
+              {isBusy === "stream" ? "Calisiyor..." : "Stream Testini Baslat"}
+            </Button>
           </div>
-        </section>
+
+          <Card>
+            <h3 className="text-sm font-semibold text-[#E8E8ED] mb-3">Canli Event Log</h3>
+            <div className="bg-[#0A0A0F] border border-[#1E1E2E] rounded-lg p-4 font-mono text-xs text-[#A78BFA] overflow-auto max-h-[400px]">
+              {streamEvents.length > 0 ? (
+                streamEvents.map((event, idx) => (
+                  <div key={idx} className="py-0.5 animate-[fadeIn_0.3s_ease-in]">{event}</div>
+                ))
+              ) : (
+                <span className="text-[#6B6B80]">Henuz event yok.</span>
+              )}
+            </div>
+          </Card>
+        </div>
       );
     }
 
     if (activePage === "replay") {
       return (
-        <section className="page-card">
-          <h1>6) Replay Sayfasi</h1>
-          <p>
-            Replay ayni tx'i tekrar oynatarak "farkli slotta ne degisir?" sorusunu test eder. Bu
-            sayfa neden-sonuc karsilastirmasi icin cok onemlidir.
-          </p>
-          <div className="form-grid two">
-            <label>
-              Replay slot (opsiyonel)
-              <input
-                value={slotInput}
-                onChange={(e) => setSlotInput(e.target.value)}
-                placeholder="Bos birakirsan guncel slot"
-              />
-            </label>
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-semibold text-[#E8E8ED]">Replay</h1>
+            <p className="text-sm text-[#6B6B80] mt-2">
+              Replay ayni tx&apos;i tekrar oynatarak &quot;farkli slotta ne degisir?&quot; sorusunu test eder. Bu sayfa neden-sonuc karsilastirmasi icin cok onemlidir.
+            </p>
           </div>
-          <div className="actions">
-            <button onClick={onReplay} disabled={!!isBusy}>
-              Replay Testini Calistir
-            </button>
+
+          <div className="max-w-md">
+            <Label>Replay slot (opsiyonel)</Label>
+            <Input
+              value={slotInput}
+              onChange={(e) => setSlotInput(e.target.value)}
+              placeholder="Bos birakirsan guncel slot"
+            />
           </div>
+
+          <div>
+            <Button onClick={onReplay} disabled={!!isBusy}>
+              {isBusy === "replay" ? "Calisiyor..." : "Replay Testini Calistir"}
+            </Button>
+          </div>
+
           <ApiBox title="Replay JSON sonucu" response={replayRes} />
-        </section>
+        </div>
       );
     }
 
     if (activePage === "audit") {
       return (
-        <section className="page-card">
-          <h1>7) Audit Sayfasi</h1>
-          <p>
-            Audit kayitlari, "sistem neyi ne zaman kararlastirmis?" sorusunu cevaplar. Kurumsal
-            kullanicilar icin izlenebilirlik adimidir.
-          </p>
-          <div className="actions">
-            <button onClick={onAudit} disabled={!!isBusy}>
-              Audit Testini Calistir
-            </button>
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-semibold text-[#E8E8ED]">Audit</h1>
+            <p className="text-sm text-[#6B6B80] mt-2">
+              Audit kayitlari, &quot;sistem neyi ne zaman kararlastirmis?&quot; sorusunu cevaplar. Kurumsal kullanicilar icin izlenebilirlik adimidir.
+            </p>
           </div>
-          <div className="form-grid two">
+
+          <div>
+            <Button onClick={onAudit} disabled={!!isBusy}>
+              {isBusy === "audit" ? "Calisiyor..." : "Audit Testini Calistir"}
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
             <ApiBox title="Recent kayitlar" response={auditRecentRes} />
             <ApiBox title="Aggregate ozet" response={auditAggregateRes} />
           </div>
-        </section>
+        </div>
       );
     }
 
     if (activePage === "mcp") {
       return (
-        <section className="page-card">
-          <h1>8) MCP Sayfasi</h1>
-          <p>
-            MCP, ajan/yardimci uygulamalarin DeltaG ile konusmasini saglar. Bu sayfada agent
-            araclarinin endpoint testini yapiyoruz.
-          </p>
-          <div className="form-grid two">
-            <label>
-              MCP Tool
-              <select value={mcpTool} onChange={(e) => setMcpTool(e.target.value)}>
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-semibold text-[#E8E8ED]">MCP (Agent Araclari)</h1>
+            <p className="text-sm text-[#6B6B80] mt-2">
+              MCP, ajan/yardimci uygulamalarin Blackthorn ile konusmasini saglar. Bu sayfada agent araclarinin endpoint testini yapiyoruz.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>MCP Tool</Label>
+              <Select value={mcpTool} onChange={(e) => setMcpTool(e.target.value)}>
                 <option value="deltag_health">deltag_health</option>
                 <option value="deltag_list_profiles">deltag_list_profiles</option>
                 <option value="deltag_analyze">deltag_analyze</option>
-              </select>
-            </label>
-            <label>
-              MCP Arguments JSON
-              <textarea rows={5} value={mcpArgs} onChange={(e) => setMcpArgs(e.target.value)} />
-            </label>
+              </Select>
+            </div>
+            <div>
+              <Label>MCP Arguments JSON</Label>
+              <Textarea rows={5} value={mcpArgs} onChange={(e) => setMcpArgs(e.target.value)} />
+            </div>
           </div>
-          <div className="actions">
-            <button onClick={onMcpTools} disabled={!!isBusy}>
-              MCP Tools Listele
-            </button>
-            <button onClick={onMcpCall} disabled={!!isBusy}>
-              MCP Call Testi
-            </button>
+
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={onMcpTools} disabled={!!isBusy}>
+              {isBusy === "mcp-tools" ? "Calisiyor..." : "MCP Tools Listele"}
+            </Button>
+            <Button onClick={onMcpCall} disabled={!!isBusy}>
+              {isBusy === "mcp-call" ? "Calisiyor..." : "MCP Call Testi"}
+            </Button>
           </div>
-          <div className="form-grid two">
+
+          <div className="grid grid-cols-2 gap-4">
             <ApiBox title="MCP tools sonucu" response={mcpToolsRes} />
             <ApiBox title="MCP call sonucu" response={mcpCallRes} />
           </div>
-        </section>
+        </div>
       );
     }
 
+    // x402 page (default)
     return (
-      <section className="page-card">
-        <h1>9) x402 Sayfasi</h1>
-        <p>
-          x402, API cagrisini odeme ile koruyan bir modeldir. Bu testte API key olmadan cagirip
-          sistemin 402 dondugunu goruruz. Boylece odeme kapisi aktif mi anlarsin.
-        </p>
-        <div className="info-banner">
-          <strong>Beklenen sonuc:</strong> x402 aciksa HTTP 402 ve payment-required header gelir.
-          API key ile cagirdiginda ise normal endpoint akisi gorursun.
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold text-[#E8E8ED]">x402 (Odeme Kapisi)</h1>
+          <p className="text-sm text-[#6B6B80] mt-2">
+            x402, API cagrisini odeme ile koruyan bir modeldir. Bu testte API key olmadan cagirip sistemin 402 dondugunu goruruz. Boylece odeme kapisi aktif mi anlarsin.
+          </p>
         </div>
-        <div className="actions">
-          <button onClick={onX402Probe} disabled={!!isBusy}>
-            x402 Probe Testini Calistir (API key'siz)
-          </button>
+
+        <InfoCallout>
+          <strong>Beklenen sonuc:</strong> x402 aciksa HTTP 402 ve payment-required header gelir. API key ile cagirdiginda ise normal endpoint akisi gorursun.
+        </InfoCallout>
+
+        <div>
+          <Button onClick={onX402Probe} disabled={!!isBusy}>
+            {isBusy === "x402" ? "Calisiyor..." : "x402 Probe Testini Calistir (API key'siz)"}
+          </Button>
         </div>
+
         <ApiBox title="x402 probe sonucu" response={x402ProbeRes} />
-      </section>
+      </div>
     );
   }
 
   return (
-    <main className="shell">
-      <aside className="sidebar">
-        <div className="brand">
-          <h2>DeltaG TestLab</h2>
-          <p>
-            Adim adim test akademisi
-            <br />
-            (Devnet odakli)
-          </p>
+    <div className="min-h-screen flex">
+      {/* Sidebar */}
+      <aside className="w-[260px] flex-shrink-0 bg-[#12121A] border-r border-[#1E1E2E] flex flex-col h-screen sticky top-0">
+        {/* Logo */}
+        <div className="px-4 py-5 border-b border-[#1E1E2E]">
+          <h2 className="text-lg font-semibold text-white">Blackthorn</h2>
+          <p className="text-xs text-[#6B6B80] mt-0.5">TestLab</p>
+          <p className="text-[11px] text-[#6B6B80]">Devnet odakli</p>
         </div>
-        <nav className="nav">
-          {pages.map((page) => (
-            <button
-              key={page.id}
-              className={`nav-item ${activePage === page.id ? "active" : ""}`}
-              onClick={() => setActivePage(page.id)}
-            >
-              <span>{page.title}</span>
-              <small>{page.hint}</small>
-              <b className={page.done ? "done" : "pending"}>{page.done ? "Tamam" : "Bekliyor"}</b>
-            </button>
-          ))}
+
+        {/* Navigation */}
+        <nav className="flex-1 overflow-auto py-2 px-2">
+          <div className="flex flex-col gap-1">
+            {pages.map((page) => (
+              <button
+                key={page.id}
+                onClick={() => setActivePage(page.id)}
+                className={`text-left px-4 py-3 rounded-lg transition-all duration-150 cursor-pointer ${
+                  activePage === page.id
+                    ? "bg-[#1A1A28] border-l-[3px] border-l-[#8B5CF6]"
+                    : "hover:bg-[#1A1A28]"
+                }`}
+              >
+                <span className={`block text-sm font-semibold ${
+                  activePage === page.id ? "text-[#E8E8ED]" : "text-[#E8E8ED]"
+                }`}>
+                  {page.title}
+                </span>
+                <span className="block text-xs text-[#6B6B80] mt-0.5">{page.hint}</span>
+                <div className="mt-1">
+                  <StatusBadge done={page.done} />
+                </div>
+              </button>
+            ))}
+          </div>
         </nav>
-        <div className="sidebar-footer">
-          <p>Durum: {isBusy ? `Calisiyor (${isBusy})` : "Hazir"}</p>
+
+        {/* Footer */}
+        <div className="px-4 py-3 border-t border-[#1E1E2E] text-[11px] font-mono text-[#6B6B80] space-y-1">
+          <p>Durum: {isBusy ? `Calisiyor...` : "Hazir"}</p>
           <p>Proxy: /api</p>
           <p>Wallet: {connectedWallet ? connectedWallet.walletName : "Bagli degil"}</p>
         </div>
       </aside>
 
-      <section className="content">
-        {error ? <p className="error">{error}</p> : null}
-        {renderPage()}
-      </section>
-    </main>
-  );
-}
-
-function ApiBox({ title, response }: { title: string; response: ApiResponse | null }) {
-  return (
-    <div className="box">
-      <h3>{title}</h3>
-      {response ? (
-        <>
-          <p className={`status ${response.ok ? "ok" : "bad"}`}>
-            HTTP {response.status} {response.ok ? "OK" : "HATA"}
-          </p>
-          <pre>{JSON.stringify(response.data, null, 2)}</pre>
-          <details>
-            <summary>Header detaylari</summary>
-            <pre>{pretty(response.headers)}</pre>
-          </details>
-        </>
-      ) : (
-        <p className="muted">Henuz istek gonderilmedi.</p>
-      )}
+      {/* Main Content */}
+      <main className="flex-1 overflow-auto bg-[#0A0A0F]">
+        <div className="max-w-[900px] mx-auto px-8 py-8">
+          {error && (
+            <div className="mb-6 p-4 bg-[#EF4444]/10 border border-[#EF4444]/30 rounded-lg text-sm text-[#EF4444]">
+              {error}
+            </div>
+          )}
+          {renderPage()}
+        </div>
+      </main>
     </div>
   );
 }
